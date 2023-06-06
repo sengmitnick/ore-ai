@@ -1,10 +1,5 @@
 name: Docker
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 on:
   push:
     branches: [ "main" ]
@@ -15,8 +10,7 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-lates
+    runs-on: ubuntu-latest
     steps:
       - name: 检出代码
         uses: actions/checkout@v3
