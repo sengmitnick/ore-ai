@@ -20,7 +20,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: sgccr.ccs.tencentyun.com/sengmitnick/ore.ai:${{ github.ref_name }}
+          images: sgccr.ccs.tencentyun.com/ore.ai/${{ github.ref_name }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
