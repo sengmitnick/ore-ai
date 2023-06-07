@@ -175,6 +175,13 @@ builder.queryField("category", (t) =>
   })
 );
 
+builder.queryField("prompt", (t) =>
+  t.prismaField({
+    type: ["Prompt"],
+    resolve: async (query, _parent) => prisma.prompt.findMany({ ...query }),
+  })
+);
+
 const schema = builder.toSchema();
 
 const handleRequest = createYoga({

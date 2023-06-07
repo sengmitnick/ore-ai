@@ -1,10 +1,26 @@
 "use client";
 
-import { Fragment, useState } from "react";
-import classNames from "classnames";
-import Link from "next/link";
+import { Fragment } from "react";
+import gql from "graphql-tag";
+import client from "@/lib/apollo-client";
+import { Category } from "./Category";
 
-export default function Home() {
+const getData = async () => {
+  const { data } = await client.query({
+    query: gql`
+      query CategoryQuery {
+        allCategory {
+          id
+          name
+        }
+      }
+    `,
+  });
+  return data;
+};
+
+export default async function Home() {
+  const data = await getData();
   return (
     <Fragment>
       <nav className="bg-white border-b dark:bg-gray-900">
@@ -12,6 +28,8 @@ export default function Home() {
           发现
         </div>
       </nav>
+
+      <Category data={[{ id: "all", name: "全部" }, ...data.allCategory]} />
     </Fragment>
   );
 }
