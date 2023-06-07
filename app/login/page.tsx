@@ -1,20 +1,51 @@
+"use client";
+
+import { Button } from "@/components";
+import { useRequest } from "ahooks";
+import Link from "next/link";
+import { FormEventHandler } from "react";
+
+async function login(formData: FormData) {
+  const res = await fetch("/api/login", { method: "POST", body: formData });
+  return res.json();
+}
+
 export default function Page() {
+  const { run, loading } = useRequest(login, { manual: true });
+
+  const onSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target as HTMLFormElement);
+    run(formData);
+  };
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img
-            className="mx-auto h-10 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-            alt="Your Company"
-          />
+          <Link href="/">
+            <img
+              className="mx-auto h-10 w-auto"
+              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+              alt="Ore AI"
+            />
+          </Link>
+
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             登录到您的帐户
           </h2>
+          <div className="mt-2 text-center text-sm text-text-secondary">
+            没有账户？
+            <Link
+              href="/signup"
+              className="font-semibold text-indigo-600 hover:text-indigo-500"
+            >
+              去注册
+            </Link>
+          </div>
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6" action="#" method="POST">
+          <form className="space-y-6" onSubmit={onSubmit}>
             <div>
               <label
                 htmlFor="email"
@@ -64,12 +95,9 @@ export default function Page() {
             </div>
 
             <div>
-              <button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
+              <Button loading={loading} type="submit" className="w-full">
                 登录
-              </button>
+              </Button>
             </div>
           </form>
         </div>
