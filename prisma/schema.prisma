@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator pothos {
+  provider = "prisma-pothos-types"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  email   String   @unique
+  pwd     String   @unique
+  id      Int      @id @default(autoincrement())
+  name    String?
+  chat    Chat[]
+  profile Profile?
+}
+
+model Chat {
+  id       Int       @id @default(autoincrement())
+  user     User      @relation(fields: [userId], references: [id])
+  userId   Int       @unique
+  prompt   Prompt    @relation(fields: [promptId], references: [id])
+  promptId Int       @unique
+  messages Message[]
+  examples Example[]
+}
+
+model Profile {
+  id     Int     @id @default(autoincrement())
+  bio    String?
+  user   User    @relation(fields: [userId], references: [id])
+  userId Int     @unique
+}
+
+model Message {
+  id      Int    @id @default(autoincrement())
+  role    Role   @default(USER)
+  content String @unique
+  chat    Chat   @relation(fields: [chatId], references: [id])
+  chatId  Int
+}
+
+model Example {
+  id      Int    @id @default(autoincrement())
+  role    Role   @default(USER)
+  content String @unique
+  chat    Chat?  @relation(fields: [chatId], references: [id])
+  chatId  Int?
+}
+
+model Prompt {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  system     String     @unique
+  icon       String?
+  chats      Chat[]
+  categories Category[]
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  key     String   @unique
+  name    String   @unique
+  prompts Prompt[]
+}
+
+enum Role {
+  USER
+  ASSISTANT
+}
