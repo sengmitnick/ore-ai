@@ -114,6 +114,40 @@ builder.queryField("login", (t) =>
   })
 );
 
+builder.queryField("chat", (t) =>
+  t.prismaField({
+    type: "Chat",
+    args: {
+      id: t.arg.id({ required: true }),
+    },
+    nullable: true,
+    resolve: async (query, _parent, args, _info) =>
+      prisma.chat.findUnique({
+        ...query,
+        where: {
+          id: Number(args.id),
+        },
+      }),
+  })
+);
+
+builder.queryField("chatMany", (t) =>
+  t.prismaField({
+    type: ["Chat"],
+    args: {
+      userId: t.arg.id({ required: true }),
+    },
+    nullable: true,
+    resolve: async (query, _parent, args, _info) =>
+      prisma.chat.findMany({
+        ...query,
+        where: {
+          userId: Number(args.userId),
+        },
+      }),
+  })
+);
+
 builder.queryField("user", (t) =>
   t.prismaField({
     type: "User",
@@ -193,7 +227,10 @@ VI. 结论和建议`,
                 },
                 examples: {
                   create: [
-                    { content: "请使用 Emoji 风格编辑以下段落，该风格以引人入胜的标题、每个段落中包含表情符号和在末尾添加相关标签为特点。请确保保持原文的意思。我的第一个内容是“推荐一下这条白裙子”" },
+                    {
+                      content:
+                        "请使用 Emoji 风格编辑以下段落，该风格以引人入胜的标题、每个段落中包含表情符号和在末尾添加相关标签为特点。请确保保持原文的意思。我的第一个内容是“推荐一下这条白裙子”",
+                    },
                     {
                       role: "ASSISTANT",
                       content:

@@ -3,18 +3,10 @@
 import { Button } from "@/components";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import gql from "graphql-tag";
 import { useLazyQuery } from "@apollo/client";
 import { FormEventHandler } from "react";
 import { formDataToObject, Token } from "@/utils";
-
-const UserQuery = gql`
-  query UserQuery($email: String!, $pwd: String!) {
-    login(email: $email, pwd: $pwd) {
-      id
-    }
-  }
-`;
+import { UserQuery } from "@/graphql";
 
 export default function Page() {
   const router = useRouter();

@@ -1,8 +1,9 @@
 "use client";
 
-import { Fragment, useState } from "react";
-import classNames from "classnames";
-import Link from "next/link";
+import { Fragment } from "react";
+import client from "@/lib/apollo-client";
+import { SignupMutation, UserQuery } from "@/graphql";
+import { ChatList } from "./ChatList";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
           对话
         </div>
       </nav>
+      <ChatList />
     </Fragment>
   );
 }

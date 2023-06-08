@@ -6,7 +6,6 @@ CREATE TABLE `User` (
     `name` VARCHAR(191) NULL,
 
     UNIQUE INDEX `User_email_key`(`email`),
-    UNIQUE INDEX `User_pwd_key`(`pwd`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -16,8 +15,6 @@ CREATE TABLE `Chat` (
     `userId` INTEGER NOT NULL,
     `promptId` INTEGER NOT NULL,
 
-    UNIQUE INDEX `Chat_userId_key`(`userId`),
-    UNIQUE INDEX `Chat_promptId_key`(`promptId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -35,10 +32,9 @@ CREATE TABLE `Profile` (
 CREATE TABLE `Message` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `role` ENUM('USER', 'ASSISTANT') NOT NULL DEFAULT 'USER',
-    `content` VARCHAR(191) NOT NULL,
+    `content` TEXT NOT NULL,
     `chatId` INTEGER NOT NULL,
 
-    UNIQUE INDEX `Message_content_key`(`content`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -46,10 +42,9 @@ CREATE TABLE `Message` (
 CREATE TABLE `Example` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `role` ENUM('USER', 'ASSISTANT') NOT NULL DEFAULT 'USER',
-    `content` VARCHAR(191) NOT NULL,
+    `content` TEXT NOT NULL,
     `chatId` INTEGER NULL,
 
-    UNIQUE INDEX `Example_content_key`(`content`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -61,7 +56,6 @@ CREATE TABLE `Prompt` (
     `icon` VARCHAR(191) NULL,
 
     UNIQUE INDEX `Prompt_name_key`(`name`),
-    UNIQUE INDEX `Prompt_system_key`(`system`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -72,7 +66,6 @@ CREATE TABLE `Category` (
     `name` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `Category_key_key`(`key`),
-    UNIQUE INDEX `Category_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

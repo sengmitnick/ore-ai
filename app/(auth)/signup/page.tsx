@@ -7,14 +7,7 @@ import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { FormEventHandler } from "react";
 import { formDataToObject, Token } from "@/utils";
-
-const SignupMutation = gql`
-  mutation SignupMutation($name: String, $email: String!, $pwd: String!) {
-    signupUser(name: $name, email: $email, pwd: $pwd) {
-      id
-    }
-  }
-`;
+import { SignupMutation } from "@/graphql";
 
 export default function Page() {
   const router = useRouter();

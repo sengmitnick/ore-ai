@@ -59,7 +59,7 @@ export const Category = ({ data }: CategoryTabProps) => {
 
   return (
     <>
-      <div className="p-3 w-full overflow-auto text-gray-500 dark:text-gray-400">
+      <div className="sticky top-14 flex-none p-3 w-full overflow-auto text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900">
         <ul className="flex text-sm font-medium text-center">
           {data.map(({ id, name }) => (
             <li className="flex-none mr-2 last:mr-0" key={id}>
