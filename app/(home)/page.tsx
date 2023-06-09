@@ -1,8 +1,6 @@
 "use client";
 
 import { Fragment } from "react";
-import client from "@/lib/apollo-client";
-import { SignupMutation, UserQuery } from "@/graphql";
 import { ChatList } from "./ChatList";
 
 export default function Home() {

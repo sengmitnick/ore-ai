@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { Token } from "@/utils";
+import Link from "next/link";
 
 export const ChatQuery = gql`
   query ChatQuery($userId: ID!) {
@@ -41,13 +42,33 @@ export const ChatList = () => {
 
   const chats = data.chatMany as any[];
   return (
-    <div>
+    <div className="w-full">
       {chats.map(({ id, prompt }) => {
         return (
-          <div key={id} className="flex items-end">
-            <div>{prompt.icon}</div>
-            <div>{prompt.name}</div>
-          </div>
+          <Link
+            key={id}
+            className="w-full pl-3 flex items-center last:border-transparent bg-black/10 hover:bg-black/20"
+            href={`/chat/${id}`}
+          >
+            <div className="flex-none">{prompt.icon}</div>
+            <div className="ml-2 py-2 pr-3 flex-1 flex items-center border-b-[0.5px] border-black/10">
+              <div className="flex-1 truncate">{prompt.name}</div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-4 h-4 flex-none text-black/10"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                />
+              </svg>
+            </div>
+          </Link>
         );
       })}
     </div>

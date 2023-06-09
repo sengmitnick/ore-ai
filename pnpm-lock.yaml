@@ -23,6 +23,9 @@ dependencies:
   '@prisma/client':
     specifier: 4.15.0
     version: 4.15.0(prisma@4.15.0)
+  '@tailwindcss/line-clamp':
+    specifier: ^0.4.4
+    version: 0.4.4(tailwindcss@3.3.2)
   '@types/js-cookie':
     specifier: ^3.0.3
     version: 3.0.3
@@ -656,6 +659,14 @@ packages:
       mini-svg-data-uri: 1.4.4
       tailwindcss: 3.3.2(ts-node@10.9.1)
     dev: true
+
+  /@tailwindcss/line-clamp@0.4.4(tailwindcss@3.3.2):
+    resolution: {integrity: sha512-5U6SY5z8N42VtrCrKlsTAA35gy2VSyYtHWCsg1H87NU1SXnEfekTVlrga9fzUDrrHcGi2Lb5KenUWb4lRQT5/g==}
+    peerDependencies:
+      tailwindcss: '>=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1'
+    dependencies:
+      tailwindcss: 3.3.2(ts-node@10.9.1)
+    dev: false
 
   /@tsconfig/node10@1.0.9:
     resolution: {integrity: sha512-jNsYVVxU8v5g43Erja32laIDHXeoNvFEpX33OK4d6hljo3jDhCBDhx5dhCCTMWUojscpAagGiRkBKxpdl9fxqA==}

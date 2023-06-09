@@ -1,15 +1,49 @@
 "use client";
 
-import { Fragment, useState } from "react";
-import classNames from "classnames";
-import Link from "next/link";
+import { Fragment } from "react";
+import gql from "graphql-tag";
+import client from "@/lib/apollo-client";
 
-export default function Home() {
+const getData = async (id: string) => {
+  const { data } = await client.query({
+    query: gql`
+      query ChatQuery($id: ID!) {
+        chat(id: $id) {
+          prompt {
+            name
+            icon
+            system
+          }
+          messages {
+            role
+            content
+          }
+          examples {
+            role
+            content
+          }
+        }
+      }
+    `,
+    variables: { id },
+  });
+  return data;
+};
+
+export default async function Home({
+  params: { id },
+}: {
+  params: { id: string };
+}) {
+  const {
+    chat: { prompt, examples, messages },
+  } = await getData(id);
   return (
     <Fragment>
       <nav className="bg-white border-b dark:bg-gray-900">
         <div className="w-full flex flex-wrap items-center justify-between mx-auto p-4">
-          我的
+          {prompt.icon}
+          {prompt.name}
         </div>
       </nav>
     </Fragment>
