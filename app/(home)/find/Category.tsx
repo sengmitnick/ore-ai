@@ -67,7 +67,7 @@ export const Category = ({ data }: CategoryTabProps) => {
                 className={classNames(
                   "inline-block px-4 py-3 rounded-lg cursor-pointer",
                   activeKey === id
-                    ? "text-white bg-blue-600 "
+                    ? "text-white bg-blue-600"
                     : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
                 )}
                 onClick={() => setActiveKey(id)}

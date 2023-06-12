@@ -39,7 +39,7 @@ builder.prismaObject("Chat", {
   fields: (t) => ({
     id: t.exposeID("id"),
     user: t.relation("user"),
-    prompt: t.relation("prompt"),
+    prompt: t.relation("prompt", { nullable: true }),
     messages: t.relation("messages"),
     examples: t.relation("examples"),
   }),
@@ -182,6 +182,23 @@ builder.mutationField("signupUser", (t) =>
           pwd: args.pwd,
           chat: {
             create: [
+              {
+                examples: {
+                  create: [
+                    { content: "你好" },
+                    {
+                      role: "ASSISTANT",
+                      content: "你好，请问有什么我可以帮助你的吗？",
+                    },
+                    { content: "你可以帮我做什么" },
+                    {
+                      role: "ASSISTANT",
+                      content:
+                        "我精通人类自然语言的交流方式，深入理解人类的需求。我可以跟您对话交流，帮您创作、获取信息。个人助理、学习帮手、工作报告、智能翻译、专业问题 等等，通通不在话下。",
+                    },
+                  ],
+                },
+              },
               {
                 prompt: {
                   connect: { name: "取个英文名" },

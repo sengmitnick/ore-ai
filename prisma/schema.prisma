@@ -24,8 +24,8 @@ model Chat {
   id       Int       @id @default(autoincrement())
   user     User      @relation(fields: [userId], references: [id])
   userId   Int
-  prompt   Prompt    @relation(fields: [promptId], references: [id])
-  promptId Int
+  prompt   Prompt?   @relation(fields: [promptId], references: [id])
+  promptId Int?
   messages Message[]
   examples Example[]
 }

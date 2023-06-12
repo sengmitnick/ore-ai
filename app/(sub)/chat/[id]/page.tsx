@@ -3,6 +3,7 @@
 import { Fragment } from "react";
 import gql from "graphql-tag";
 import client from "@/lib/apollo-client";
+import { ChatPage } from "./ChatPage";
 
 const getData = async (id: string) => {
   const { data } = await client.query({
@@ -30,7 +31,7 @@ const getData = async (id: string) => {
   return data;
 };
 
-export default async function Home({
+export default async function Page({
   params: { id },
 }: {
   params: { id: string };
@@ -38,14 +39,5 @@ export default async function Home({
   const {
     chat: { prompt, examples, messages },
   } = await getData(id);
-  return (
-    <Fragment>
-      <nav className="bg-white border-b dark:bg-gray-900">
-        <div className="w-full flex flex-wrap items-center justify-between mx-auto p-4">
-          {prompt.icon}
-          {prompt.name}
-        </div>
-      </nav>
-    </Fragment>
-  );
+  return <ChatPage prompt={prompt} examples={examples} messages={messages} />;
 }
