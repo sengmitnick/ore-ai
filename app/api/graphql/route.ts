@@ -1,7 +1,6 @@
 import { createYoga } from "graphql-yoga";
 import SchemaBuilder from "@pothos/core";
 import PrismaPlugin from "@pothos/plugin-prisma";
-import { DateTimeResolver } from "graphql-scalars";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -145,6 +144,49 @@ builder.queryField("chatMany", (t) =>
           userId: Number(args.userId),
         },
       }),
+  })
+);
+
+builder.mutationField("message", (t) =>
+  t.prismaField({
+    type: "Message",
+    args: {
+      chatId: t.arg.id({ required: true }),
+      role: t.arg({ required: true, type: Role }),
+      content: t.arg.string({ required: true }),
+    },
+    resolve: async (query, _parent, args, _info) =>
+      prisma.message.create({
+        ...query,
+        data: {
+          chatId: Number(args.chatId),
+          role: args.role,
+          content: args.content,
+        },
+      }),
+  })
+);
+
+builder.mutationField("cleanMessage", (t) =>
+  t.prismaField({
+    type: "Chat",
+    args: {
+      chatId: t.arg.id({ required: true }),
+    },
+    nullable: true,
+    resolve: async (query, _parent, args, _info) => {
+      await prisma.message.deleteMany({
+        where: {
+          chatId: Number(args.chatId),
+        },
+      });
+      return prisma.chat.findUnique({
+        ...query,
+        where: {
+          id: Number(args.chatId),
+        },
+      });
+    },
   })
 );
 

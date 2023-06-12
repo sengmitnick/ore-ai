@@ -7,6 +7,7 @@ import { useLazyQuery } from "@apollo/client";
 import { Token } from "@/utils";
 import Link, { LinkProps } from "next/link";
 import classNames from "classnames";
+import { Result, Skeleton } from "@/components";
 
 const ChatQuery = gql`
   query ChatQuery($userId: ID!) {
@@ -75,8 +76,9 @@ export const ChatList = () => {
     setSpinning(false);
   }, []);
 
-  if (loading || spinning) return <>Loading...</>;
-  if (error) return <>{`Error! ${error.message}`}</>;
+  if (loading || spinning) return <Skeleton />;
+  if (error)
+    return <Result status="error" title="Error!" desc={error.message} />;
 
   const chats = data.chatMany as any[];
   return (

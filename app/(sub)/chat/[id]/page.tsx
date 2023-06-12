@@ -10,6 +10,7 @@ const getData = async (id: string) => {
     query: gql`
       query ChatQuery($id: ID!) {
         chat(id: $id) {
+          id
           prompt {
             name
             icon
@@ -31,13 +32,16 @@ const getData = async (id: string) => {
   return data;
 };
 
-export default async function Page({
-  params: { id },
-}: {
-  params: { id: string };
-}) {
+export default async function Page({ params }: { params: { id: string } }) {
   const {
-    chat: { prompt, examples, messages },
-  } = await getData(id);
-  return <ChatPage prompt={prompt} examples={examples} messages={messages} />;
+    chat: { id, prompt, examples, messages },
+  } = await getData(params.id);
+  return (
+    <ChatPage
+      chatId={id}
+      prompt={prompt}
+      examples={examples}
+      messages={messages}
+    />
+  );
 }

@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.streaming {
+  &::after {
+    animation: blink 1s steps(5, start) infinite;
+    content: "▋";
+    margin-left: 0.25rem;
+    vertical-align: baseline;
+  }
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}

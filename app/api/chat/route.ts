@@ -1,28 +1,30 @@
-import { Configuration, OpenAIApi } from "openai";
-import { NextResponse } from "next/server";
+import { OpenAIStream, OpenAIStreamPayload } from "@/utils/openAIStream";
 
-const configuration = new Configuration({
-  basePath: `${process.env.NEXT_PUBLIC_API_URL}`,
-  apiKey: `${process.env.NEXT_PUBLIC_API_KEY}`,
-});
+if (!process.env.NEXT_PUBLIC_API_KEY) {
+  throw new Error("Missing env var from OpenAI");
+}
 
-const openai = new OpenAIApi(configuration);
+export async function POST(req: Request): Promise<Response> {
+  const { messages } = (await req.json()) as {
+    messages?: any[];
+  };
 
-export const POST = async (request: Request) => {
-  try {
-    const messages = await request.json();
-    const completion = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: messages,
-    });
-    const choice = completion.data.choices[0];
-    console.log(choice.message?.content);
-    return NextResponse.json({
-      message: choice.message,
-      finish_reason: choice.finish_reason,
-      usage: completion.data.usage,
-    });
-  } catch (error) {
-    return NextResponse.json({ error }, { status: 500 });
+  if (!messages) {
+    return new Response("No messages in the request", { status: 400 });
   }
-};
+
+  const payload: OpenAIStreamPayload = {
+    model: "gpt-3.5-turbo",
+    messages,
+    temperature: 0.7,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+    max_tokens: 1000,
+    stream: true,
+    n: 1,
+  };
+
+  const stream = await OpenAIStream(payload);
+  return new Response(stream);
+}

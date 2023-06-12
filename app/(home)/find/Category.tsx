@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/client";
 import { PromptList } from "./PromptList";
+import { Result, Skeleton } from "@/components";
 
 const CategoryQuery = gql`
   query CategoryQuery($id: ID!) {
@@ -39,8 +40,9 @@ const CategoryPrompt = ({ id }: { id: string }) => {
     variables: { id },
   });
 
-  if (loading) return <>Loading...</>;
-  if (error) return <>{`Error! ${error.message}`}</>;
+  if (loading) return <Skeleton />;
+  if (error)
+    return <Result status="error" title="Error!" desc={error.message} />;
 
   return <PromptList list={data.category.prompts} />;
 };
@@ -48,8 +50,9 @@ const CategoryPrompt = ({ id }: { id: string }) => {
 const AllPrompt = () => {
   const { loading, error, data } = useQuery(PromptQuery);
 
-  if (loading) return <>Loading...</>;
-  if (error) return <>{`Error! ${error.message}`}</>;
+  if (loading) return <Skeleton />;
+  if (error)
+    return <Result status="error" title="Error!" desc={error.message} />;
 
   return <PromptList list={data.prompt} />;
 };
