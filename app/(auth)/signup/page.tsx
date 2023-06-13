@@ -3,7 +3,6 @@
 import { Button } from "@/components";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { FormEventHandler } from "react";
 import { formDataToObject, Token } from "@/utils";
@@ -129,7 +128,12 @@ export default function Page() {
             </div>
 
             <div>
-              <Button loading={loading} type="submit" className="w-full">
+              <Button
+                loading={loading}
+                type="submit"
+                mode="primary"
+                className="w-full"
+              >
                 注册
               </Button>
             </div>

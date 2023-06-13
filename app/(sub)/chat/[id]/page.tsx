@@ -1,6 +1,3 @@
-"use client";
-
-import { Fragment } from "react";
 import gql from "graphql-tag";
 import client from "@/lib/apollo-client";
 import { ChatPage } from "./ChatPage";
@@ -32,6 +29,7 @@ const getData = async (id: string) => {
   return data;
 };
 
+export const dynamic = "force-dynamic";
 export default async function Page({ params }: { params: { id: string } }) {
   const {
     chat: { id, prompt, examples, messages },

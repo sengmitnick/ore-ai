@@ -1,10 +1,6 @@
-"use client";
+import { Fragment } from "react";
 
-import { Fragment, useState } from "react";
-import classNames from "classnames";
-import Link from "next/link";
-
-export default function Home() {
+export default function Page() {
   return (
     <Fragment>
       <nav className="bg-white border-b dark:bg-gray-900">

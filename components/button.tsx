@@ -1,14 +1,17 @@
 import classNames from "classnames";
 import { ButtonHTMLAttributes } from "react";
+export type ButtonType = "primary" | "default";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
+  mode?: ButtonType;
 };
 
 export const Button = ({
   className,
   children,
   loading,
+  mode = "default",
   ...props
 }: ButtonProps) => (
   <button
@@ -16,7 +19,11 @@ export const Button = ({
     disabled={loading}
     className={classNames(
       className,
-      "relative flex justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+      mode === "default" &&
+        "text-gray-500 bg-white border border-gray-200 hover:bg-gray-100 focus:ring-blue-300 focus-visible:outline-gray-600",
+      mode === "primary" &&
+        "bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-600",
+      "relative flex justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
     )}
   >
     {children}

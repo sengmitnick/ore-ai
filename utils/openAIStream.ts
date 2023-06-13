@@ -3,6 +3,7 @@ import {
   ParsedEvent,
   ReconnectInterval,
 } from "eventsource-parser";
+import { NextResponse } from "next/server";
 
 export type ChatGPTAgent = "user" | "system";
 
@@ -41,6 +42,21 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
     }
   );
 
+  if (res.status == 403) {
+    return NextResponse.json(
+      { error: "当前 Key 的调用额度已用完～" },
+      { status: 400 }
+    );
+  }
+
+  if (res.status != 200) {
+    const data = await res.json();
+    return NextResponse.json(
+      { error: data?.error?.message || "未知错误" },
+      { status: res.status, statusText: res.statusText }
+    );
+  }
+
   const stream = new ReadableStream({
     async start(controller) {
       // callback
@@ -54,6 +70,12 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
           }
           try {
             const json = JSON.parse(data);
+            if (json.error) {
+              // controller.error(new Error(json.error.message));
+              controller.close();
+              return;
+            }
+
             const text = json.choices[0].delta?.content || "";
             if (counter < 2 && (text.match(/\n/) || []).length) {
               // this is a prefix character (i.e., "\n\n"), do nothing
@@ -79,5 +101,5 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
     },
   });
 
-  return stream;
+  return new Response(stream);
 }

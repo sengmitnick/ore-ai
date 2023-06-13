@@ -1,5 +1,3 @@
-"use client";
-
 import { Fragment } from "react";
 import gql from "graphql-tag";
 import client from "@/lib/apollo-client";
@@ -19,7 +17,8 @@ const getData = async () => {
   return data;
 };
 
-export default async function Home() {
+export const dynamic = "force-dynamic";
+export default async function Page() {
   const data = await getData();
   return (
     <Fragment>

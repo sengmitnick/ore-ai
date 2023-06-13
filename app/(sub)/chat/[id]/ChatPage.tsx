@@ -8,7 +8,7 @@ import { FormEventHandler, useEffect, useRef, useState } from "react";
 import { Dropdown } from "flowbite";
 import type { DropdownOptions, DropdownInterface } from "flowbite";
 import gql from "graphql-tag";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const MessageMutation = gql`
   mutation MessageMutation($role: Role!, $content: String!, $chatId: ID!) {
@@ -36,7 +36,7 @@ interface ChatPageProps {
   chatId: string;
   prompt?: { icon: string; name: string; system: string };
   examples?: { role: Role; content: string }[];
-  messages: { role: Role; content: string }[];
+  messages: { role: Role; content: string; error?: boolean }[];
 }
 
 export function ChatPage({
@@ -46,6 +46,7 @@ export function ChatPage({
   prompt,
 }: ChatPageProps) {
   const router = useRouter();
+  const search = useSearchParams();
   const dropdownRef = useRef<DropdownInterface>();
   const [input, setInput] = useState("");
   const [list, update] = useState(() => [...messages].reverse());
@@ -58,6 +59,27 @@ export function ChatPage({
   });
 
   useEffect(() => {
+    const source = search.get("source");
+    if (source === "prompt") {
+      update((prev) => {
+        const chats = [{ role: Role.ASSISTANT, content: "" }, ...prev];
+        const messages = [...chats];
+        messages.shift();
+        if (prompt?.system) {
+          messages.push({ role: Role.SYSTEM, content: prompt.system });
+        }
+        messages.reverse();
+
+        generateResponse(
+          messages.map(({ content, role }) => ({
+            content,
+            role: role?.toLowerCase(),
+          }))
+        );
+        return chats;
+      });
+    }
+
     // set the dropdown menu element
     const $targetEl: HTMLElement = document.getElementById("dropdownMenu")!;
 
@@ -94,7 +116,14 @@ export function ChatPage({
     });
 
     if (!response.ok) {
-      throw new Error(response.statusText);
+      setLoading(false);
+      const data = await response.json();
+      update((prev) => {
+        prev[0].content = data.error || "未知错误";
+        prev[0].error = true;
+        return [...prev];
+      });
+      return;
     }
 
     // This data is a ReadableStream
@@ -198,7 +227,7 @@ export function ChatPage({
           >
             <ul
               className="py-2 text-sm text-gray-700 dark:text-gray-200"
-              aria-labelledby="dropdownDefaultButton"
+              aria-labelledby="dropdownButton"
             >
               <li>
                 <div
@@ -218,7 +247,7 @@ export function ChatPage({
       <div className="flex-1 pt-3 px-2 flex flex-col-reverse gap-2 overflow-y-auto overflow-x-hidden">
         <div className="flex-1"></div>
 
-        {list.map(({ role, content }, inx) => (
+        {list.map(({ role, content, error }, inx) => (
           <div
             key={inx}
             className={classNames(
@@ -230,7 +259,10 @@ export function ChatPage({
               className={classNames(
                 "p-2 rounded-md max-w-[90%] min-h-[40px] whitespace-pre-wrap break-words",
                 loading && inx === 0 && "streaming",
-                role === Role.ASSISTANT
+
+                error
+                  ? "bg-red-400 text-white"
+                  : role === Role.ASSISTANT
                   ? "bg-black/5 text-gray-500"
                   : "bg-blue-600 text-white"
               )}
@@ -259,7 +291,7 @@ export function ChatPage({
           </div>
         ))}
 
-        {examples?.length && (
+        {!!examples?.length && (
           <div className="w-full flex flex-col items-center gap-2">
             {examples.map(({ role, content }, inx) => (
               <div

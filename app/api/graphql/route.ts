@@ -147,6 +147,24 @@ builder.queryField("chatMany", (t) =>
   })
 );
 
+builder.mutationField("chat", (t) =>
+  t.prismaField({
+    type: "Chat",
+    args: {
+      userId: t.arg.id({ required: true }),
+      promptId: t.arg.id({ required: true }),
+    },
+    resolve: async (query, _parent, args, _info) =>
+      prisma.chat.create({
+        ...query,
+        data: {
+          userId: Number(args.userId),
+          promptId: Number(args.promptId),
+        },
+      }),
+  })
+);
+
 builder.mutationField("message", (t) =>
   t.prismaField({
     type: "Message",

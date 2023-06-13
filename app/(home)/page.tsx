@@ -1,9 +1,7 @@
-"use client";
-
 import { Fragment } from "react";
 import { ChatList } from "./ChatList";
 
-export default function Home() {
+export default function Page() {
   return (
     <Fragment>
       <nav className="bg-white border-b dark:bg-gray-900">

@@ -110,7 +110,12 @@ export default function Page() {
             </div>
 
             <div>
-              <Button loading={loading} type="submit" className="w-full">
+              <Button
+                loading={loading}
+                type="submit"
+                mode="primary"
+                className="w-full"
+              >
                 登录
               </Button>
             </div>
