@@ -1,25 +1,25 @@
+"use client";
+
 import { Fragment } from "react";
 import gql from "graphql-tag";
-import client from "@/lib/apollo-client";
+import { useQuery } from "@apollo/client";
+import { Result, Skeleton } from "@/components";
 import { Category } from "./Category";
 
-const getData = async () => {
-  const { data } = await client.query({
-    query: gql`
-      query CategoryQuery {
-        allCategory {
-          id
-          name
-        }
-      }
-    `,
-  });
-  return data;
-};
+const CategoryQuery = gql`
+query CategoryQuery {
+  allCategory {
+    id
+    name
+  }
+}
+`
 
-export const dynamic = "force-dynamic";
-export default async function Page() {
-  const data = await getData();
+export default function Page() {
+  const { loading, error, data } = useQuery(CategoryQuery);
+  if (loading) return <Skeleton />;
+  if (error)
+    return <Result status="error" title="Error!" desc={error.message} />;
   return (
     <Fragment>
       <nav className="sticky top-0 bg-white dark:bg-gray-900">
