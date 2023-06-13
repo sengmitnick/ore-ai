@@ -19,7 +19,7 @@ builder.queryType({});
 
 builder.mutationType({});
 
-export const Role = builder.enumType("Role", {
+const Role = builder.enumType("Role", {
   values: ["USER", "ASSISTANT"] as const,
 });
 
@@ -513,7 +513,7 @@ builder.queryField("prompt", (t) =>
 
 const schema = builder.toSchema();
 
-const handleRequest = createYoga({
+const handleRequest: any = createYoga({
   schema,
   graphqlEndpoint: "/api/graphql",
   fetchAPI: { Response: NextResponse },
