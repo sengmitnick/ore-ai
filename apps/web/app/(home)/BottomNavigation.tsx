@@ -48,14 +48,14 @@ const icons: any = {
 const menus = [
   { href: "/", name: "对话", key: "chat" },
   { href: "/find", name: "发现", key: "find" },
-  { href: "/mine", name: "我的", key: "mine" },
+  // { href: "/mine", name: "我的", key: "mine" },
 ];
 
 export const BottomNavigation = () => {
   const pathname = usePathname();
   return (
     <div className="w-full h-16 bg-white border-t dark:bg-gray-700">
-      <div className="grid h-full max-w-lg grid-cols-3 mx-auto font-medium">
+      <div className="grid h-full max-w-lg grid-cols-2 mx-auto font-medium">
         {menus.map(({ key, name, href }) => (
           <Link
             key={key}

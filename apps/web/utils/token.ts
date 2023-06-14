@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import { storage } from "./storage";
 
-export const TOKEN = process.env.NEXT_PUBLIC_TOKEN!;
+export const TOKEN = "ore-ai_token";
 export const Token = {
   get TOKEN() {
     return TOKEN;
