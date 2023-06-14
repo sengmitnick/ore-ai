@@ -49,6 +49,8 @@ export function ChatPage({
   const router = useRouter();
   const search = useSearchParams();
   const dropdownRef = useRef<DropdownInterface>();
+  const controllerRef = useRef<AbortController>();
+
   const [input, setInput] = useState("");
   const [list, update] = useState(() => [...messages].reverse());
   const [loading, setLoading, getLoad] = useGetState(false);
@@ -121,16 +123,23 @@ export function ChatPage({
     };
 
     let text = "";
+    controllerRef.current = new AbortController();
 
+    // 使用 fetchSSE 函数向指定的 API 地址发送 POST 请求
     fetchSSE(`${process.env.NEXT_PUBLIC_API_URL}/chat/completions`, {
+      // 设置请求头
       headers: {
         "Content-Type": "application/json",
+        // 携带 API_KEY 进行身份认证
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_KEY ?? ""}`,
       },
-      method: "POST",
-      body: JSON.stringify(payload),
+      method: "POST", // 设置请求方法为 POST
+      signal: controllerRef.current.signal, // 指定请求的控制器信号
+      body: JSON.stringify(payload), // 将请求体转换为 JSON 字符串并发送
+      // 当接收到消息时触发的回调函数
       onMessage: (data) => {
         if (!getLoad()) return;
+        // 如果接收到的消息是"[DONE]"，则表示对话结束，设置加载状态为false，并添加消息到数据库
         if (data === "[DONE]") {
           setLoading(false);
           addMessage({
@@ -140,13 +149,19 @@ export function ChatPage({
         }
 
         try {
+          // 尝试将接收到的消息解析为JSON对象
           const ret = JSON.parse(data);
           const finish_reason = ret.choices[0].finish_reason;
+          // 判断对话是否结束
           const finish = finish_reason === "stop" || finish_reason === "length";
+          // 获取对话回复的内容
           const content = ret.choices[0].delta.content;
+          // 如果对话结束，则设置加载状态为false
           if (finish) {
             setLoading(false);
-          } else if (content) {
+          }
+          // 如果对话未结束且有回复内容，则将回复内容添加到当前对话文本中，并更新对话列表
+          else if (content) {
             text += content;
             update((prev) => {
               prev[0].content = text;
@@ -154,17 +169,40 @@ export function ChatPage({
             });
           }
         } catch (error) {
+          // 如果解析消息出错，则设置加载状态为false，并将当前对话设置为解析消息出错。
           console.log("error", error);
           setLoading(false);
           update((prev) => {
-            prev[0].content = "未知错误";
+            prev[0].content = "解析消息出错";
             prev[0].error = true;
             return [...prev];
           });
         }
       },
-    }).catch((err) => {
-      console.log("error", err);
+      // 当请求出错时执行的回调函数
+      onError: async (res) => {
+        // 获取错误信息
+        const content = await res.text();
+        // 设置 loading 状态为 false
+        setLoading(false);
+        // 如果错误状态码为 403，则提示用户 API_KEY 调用额度已用完
+        if (res.status == 403) {
+          update((prev) => {
+            prev[0].content =
+              "当前 API_KEY 调用额度已用完，请联系运营人员增加额度";
+            prev[0].error = true;
+            return [...prev];
+          });
+          return;
+        }
+        // 否则将错误信息更新到聊天记录中
+        update((prev) => {
+          prev[0].content = content;
+          prev[0].error = true;
+          return [...prev];
+        });
+      },
+    }).catch(() => {
       setLoading(false);
       update((prev) => {
         prev[0].content = "未知错误";
@@ -294,7 +332,10 @@ export function ChatPage({
             {loading && inx === 0 && (
               <div
                 className="w-4 h-4 ml-2 flex items-center justify-center rounded-xl border border-red-600"
-                onClick={() => setLoading(false)}
+                onClick={() => {
+                  setLoading(false);
+                  controllerRef.current?.abort();
+                }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

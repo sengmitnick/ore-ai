@@ -12,17 +12,17 @@ class ChatGPTError extends Error {
 
 export async function fetchSSE(
   url: string,
-  options: Parameters<typeof fetch>[1] & { onMessage: (data: string) => void }
+  options: Parameters<typeof fetch>[1] & {
+    onMessage: (data: string) => void;
+    onError: (response: Response) => void;
+  }
 ) {
-  const { onMessage, ...fetchOptions } = options;
+  const { onMessage, onError, ...fetchOptions } = options;
   const res = await fetch(url, fetchOptions);
+
   if (!res.ok) {
-    const msg = `ChatGPTAPI error ${res.status || res.statusText}`;
-    const error = new ChatGPTError(msg);
-    error.statusCode = res.status;
-    error.statusText = res.statusText;
-    error.response = res;
-    throw error;
+    onError(res);
+    return;
   }
 
   const parser = createParser((event) => {

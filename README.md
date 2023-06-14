@@ -30,11 +30,6 @@
 
 ![对话详情页](./img/3.png)
 
-### TODO
-
-- 注册：校验当前邮箱是否已注册
-- 对话：处理上下文超过4096 tokens的问题（目前只能清空对话以继续进行）
-
 ## 应用实现
 
 OreAI 基于 Next.js 开发，后端层面使用了 prisma 和 GraphQL，数据库使用 1024Code 内置的 mysql，使用 turbo 缓存打包资产。具体实现应用代码在 `apps/web`。
@@ -57,7 +52,7 @@ PS: 该方法是在 `AI 接口服务` 内测期间的临时修改方案，后续
 
 ### Next.js 环境变量
 
-在 `apps/web` 文件存储了会在 OreAI 应用中用到的环境变量。
+在 `apps/web/.env` 文件存储了会在 OreAI 应用中用到的环境变量。
 
 ```
 NEXT_PUBLIC_API_URL=$API_URL
@@ -139,3 +134,10 @@ fetchSSE(`${process.env.NEXT_PUBLIC_API_URL}/chat/completions`, {
   });
 });
 ```
+
+
+### TODO
+
+- 注册：校验当前邮箱是否已注册
+- 对话：处理上下文超过4096 tokens的问题（目前只能清空对话以继续进行）
+- 对话：新用户示例对话第一次提问回答异常问题
