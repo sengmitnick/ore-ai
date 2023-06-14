@@ -7,13 +7,13 @@ import { Result, Skeleton } from "@/components";
 import { Category } from "./Category";
 
 const CategoryQuery = gql`
-query CategoryQuery {
-  allCategory {
-    id
-    name
+  query CategoryQuery {
+    allCategory {
+      id
+      name
+    }
   }
-}
-`
+`;
 
 export default function Page() {
   const { loading, error, data } = useQuery(CategoryQuery);
