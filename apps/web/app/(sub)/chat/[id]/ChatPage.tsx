@@ -4,12 +4,12 @@ import { formDataToObject } from "@/utils";
 import { useGetState, useMount } from "ahooks";
 import classNames from "classnames";
 import { useMutation } from "@apollo/client";
-import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { FormEventHandler, useRef, useState } from "react";
 import { Dropdown } from "flowbite";
 import type { DropdownOptions, DropdownInterface } from "flowbite";
 import gql from "graphql-tag";
 import { useRouter, useSearchParams } from "next/navigation";
+import { fetchSSE } from "@/utils/fetch-sse";
 
 const MessageMutation = gql`
   mutation MessageMutation($role: Role!, $content: String!, $chatId: ID!) {
@@ -122,61 +122,55 @@ export function ChatPage({
 
     let text = "";
 
-    fetchEventSource(`${process.env.NEXT_PUBLIC_API_URL}/chat/completions`, {
+    fetchSSE(`${process.env.NEXT_PUBLIC_API_URL}/chat/completions`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_KEY ?? ""}`,
       },
       method: "POST",
       body: JSON.stringify(payload),
-      onopen: async (response) => {
-        if (response.status == 403) {
-          setLoading(false);
-          update((prev) => {
-            prev[0].content = "当前 Key 的调用额度已用完～";
-            prev[0].error = true;
-            return [...prev];
-          });
-          return;
-        }
-        update((prev) => {
-          prev[0].content = "";
-          return [...prev];
-        });
-      },
-      onmessage: (msg) => {
+      onMessage: (data) => {
         if (!getLoad()) return;
-        if (msg.data === "[DONE]") {
+        if (data === "[DONE]") {
           setLoading(false);
           addMessage({
             variables: { chatId, role: Role.ASSISTANT, content: text },
           });
           return;
         }
-        const data = JSON.parse(msg.data);
-        const finish_reason = data.choices[0].finish_reason;
-        const finish = finish_reason === "stop" || finish_reason === "length";
-        const content = data.choices[0].delta.content;
 
-        if (finish) {
+        try {
+          const ret = JSON.parse(data);
+          const finish_reason = ret.choices[0].finish_reason;
+          const finish = finish_reason === "stop" || finish_reason === "length";
+          const content = ret.choices[0].delta.content;
+          if (finish) {
+            setLoading(false);
+          } else if (content) {
+            text += content;
+            update((prev) => {
+              prev[0].content = text;
+              return [...prev];
+            });
+          }
+        } catch (error) {
+          console.log("error", error);
           setLoading(false);
-        } else if (content) {
-          text += content;
           update((prev) => {
-            prev[0].content = content;
+            prev[0].content = "未知错误";
+            prev[0].error = true;
             return [...prev];
           });
         }
       },
-      onerror: (err) => {
-        console.log("error", err);
-        setLoading(false);
-        update((prev) => {
-          prev[0].content = "未知错误";
-          prev[0].error = true;
-          return [...prev];
-        });
-      },
+    }).catch((err) => {
+      console.log("error", err);
+      setLoading(false);
+      update((prev) => {
+        prev[0].content = "未知错误";
+        prev[0].error = true;
+        return [...prev];
+      });
     });
   };
 
