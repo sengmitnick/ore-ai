@@ -10,6 +10,7 @@ import type { DropdownOptions, DropdownInterface } from "flowbite";
 import gql from "graphql-tag";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchSSE } from "@/utils/fetch-sse";
+import { fetch } from "@/utils/fetch";
 
 const MessageMutation = gql`
   mutation MessageMutation($role: Role!, $content: String!, $chatId: ID!) {
@@ -124,6 +125,8 @@ export function ChatPage({
 
     let text = "";
     controllerRef.current = new AbortController();
+    const ret = await fetch("/api/api_key");
+    const { key } = await ret.json();
 
     // 使用 fetchSSE 函数向指定的 API 地址发送 POST 请求
     fetchSSE(`${process.env.NEXT_PUBLIC_API_URL}/chat/completions`, {
@@ -131,7 +134,7 @@ export function ChatPage({
       headers: {
         "Content-Type": "application/json",
         // 携带 API_KEY 进行身份认证
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_KEY ?? ""}`,
+        Authorization: `Bearer ${key}`,
       },
       method: "POST", // 设置请求方法为 POST
       signal: controllerRef.current.signal, // 指定请求的控制器信号
