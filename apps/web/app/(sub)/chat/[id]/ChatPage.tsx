@@ -125,7 +125,7 @@ export function ChatPage({
 
     let text = "";
     controllerRef.current = new AbortController();
-    const ret = await fetch("/api/api_key");
+    const ret = await fetch("/api/api_key", { method: "POST" });
     const { key } = await ret.json();
 
     // 使用 fetchSSE 函数向指定的 API 地址发送 POST 请求
