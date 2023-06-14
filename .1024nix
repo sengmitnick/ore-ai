@@ -6,8 +6,8 @@ pkgs.mkShell {
         export LANG=en_US.UTF-8
         export npm_config_prefix="$HOME/app/.config/npm/node_global"
         export PATH=$HOME/app/node_modules/.bin:$npm_config_prefix/bin:$PATH
+        export PORT=8080
         export DB_NAME=ore_ai_db
-        export LOCAL_HOST="http://localhost:8080"
         export API_URL="https://llm.1024code.com/v1"
         export API_KEY="e024-3vv8QuHbER4guU2O1LVdWbDWEmU0FtqZ"
     '';

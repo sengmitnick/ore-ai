@@ -25,6 +25,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
 # local env files
 .env*.local
@@ -33,8 +34,6 @@ yarn-error.log*
 .vercel
 
 # 1024code
-.1024.nix
-.1024nix
 .1024feature*
 .config
 
