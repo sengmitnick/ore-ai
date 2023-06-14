@@ -1,10 +1,10 @@
 "use client";
 
-import React, { FormEventHandler, useEffect, useRef } from "react";
+import React, { FormEventHandler, useRef } from "react";
 import { Modal } from "flowbite";
 import gql from "graphql-tag";
 import type { ModalOptions, ModalInterface } from "flowbite";
-import { useSetState } from "ahooks";
+import { useMount, useSetState } from "ahooks";
 import { Button } from "@/components";
 import { useMutation } from "@apollo/client";
 import { Token } from "@/utils";
@@ -44,7 +44,7 @@ export const PromptList = ({ list }: PromptListProps) => {
     system: "",
   });
 
-  useEffect(() => {
+  useMount(() => {
     const $modalElement: HTMLElement = document.querySelector("#prompt-modal")!;
 
     const modalOptions: ModalOptions = {
@@ -59,7 +59,7 @@ export const PromptList = ({ list }: PromptListProps) => {
     };
 
     modalRef.current = new Modal($modalElement, modalOptions);
-  }, []);
+  });
 
   const handleClose = () => {
     if (loading) return;

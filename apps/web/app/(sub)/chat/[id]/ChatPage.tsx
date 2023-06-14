@@ -1,10 +1,10 @@
 "use client";
 
 import { formDataToObject } from "@/utils";
-import { useGetState } from "ahooks";
+import { useGetState, useMount } from "ahooks";
 import classNames from "classnames";
 import { useMutation } from "@apollo/client";
-import { FormEventHandler, useEffect, useRef, useState } from "react";
+import { FormEventHandler, useRef, useState } from "react";
 import { Dropdown } from "flowbite";
 import type { DropdownOptions, DropdownInterface } from "flowbite";
 import gql from "graphql-tag";
@@ -58,7 +58,7 @@ export function ChatPage({
     },
   });
 
-  useEffect(() => {
+  useMount(() => {
     const source = search.get("source");
     if (source === "prompt") {
       update((prev) => {
@@ -96,7 +96,7 @@ export function ChatPage({
     };
 
     dropdownRef.current = new Dropdown($targetEl, $triggerEl, options);
-  }, []);
+  });
 
   const generateResponse = async (
     chats: {

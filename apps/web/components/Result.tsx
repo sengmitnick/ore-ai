@@ -62,7 +62,7 @@ export const Result: FC<ResultProps> = (props) => {
       default:
         return null;
     }
-  }, [status]);
+  }, [status, props.icon]);
   return (
     <div
       className={classNames("w-full px-6 flex flex-col items-center", {

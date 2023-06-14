@@ -3,7 +3,7 @@ const map = new Map<string, string>();
 export const storage = {
   setItem(key: string, value: string) {
     if (typeof window === "undefined") return;
-    if (window.self !== window.top || !window.navigator.cookieEnabled) {
+    if (!window.navigator.cookieEnabled) {
       map.set(key, value);
       return;
     }
@@ -11,14 +11,14 @@ export const storage = {
   },
   getItem(key: string) {
     if (typeof window === "undefined") return null;
-    if (window.self !== window.top || !window.navigator.cookieEnabled) {
+    if (!window.navigator.cookieEnabled) {
       return map.get(key) || null;
     }
     return window.localStorage.getItem(key);
   },
   removeItem(key: string) {
     if (typeof window === "undefined") return;
-    if (window.self !== window.top || !window.navigator.cookieEnabled) {
+    if (!window.navigator.cookieEnabled) {
       map.delete(key);
       return;
     }

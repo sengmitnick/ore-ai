@@ -2,12 +2,13 @@
 
 import gql from "graphql-tag";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { Token } from "@/utils";
 import Link, { LinkProps } from "next/link";
 import classNames from "classnames";
 import { Result, Skeleton } from "@/components";
+import { useMount } from "ahooks";
 
 const ChatQuery = gql`
   query ChatQuery($userId: ID!) {
@@ -62,7 +63,8 @@ export const ChatList = () => {
   const router = useRouter();
   const [spinning, setSpinning] = useState(true);
   const [run, { data, loading, error }] = useLazyQuery(ChatQuery);
-  useEffect(() => {
+
+  useMount(() => {
     let userId: string | null = null;
     if (Token.isSignIn) {
       userId = Token.token;
@@ -74,7 +76,7 @@ export const ChatList = () => {
     }
     run({ variables: { userId } });
     setSpinning(false);
-  }, []);
+  });
 
   if (loading || spinning) return <Skeleton />;
   if (error)
