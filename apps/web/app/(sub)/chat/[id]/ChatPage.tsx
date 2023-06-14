@@ -126,10 +126,10 @@ export function ChatPage({
     let text = "";
     controllerRef.current = new AbortController();
     const ret = await fetch("/api/api_key", { method: "POST" });
-    const { key } = await ret.json();
+    const key = await ret.text();
 
     // 使用 fetchSSE 函数向指定的 API 地址发送 POST 请求
-    fetchSSE(`${process.env.NEXT_PUBLIC_API_URL}/chat/completions`, {
+    fetchSSE(`https://llm.1024code.com/v1/chat/completions`, {
       // 设置请求头
       headers: {
         "Content-Type": "application/json",

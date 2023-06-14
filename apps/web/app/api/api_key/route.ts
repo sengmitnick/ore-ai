@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
+if (!process.env.API_KEY) {
+  throw new Error("Missing env var from OpenAI");
+}
 
 export async function POST() {
-  return NextResponse.json({ key: process.env.API_KEY });
+  return new Response(process.env.API_KEY, { status: 200 });
 }

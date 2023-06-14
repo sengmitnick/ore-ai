@@ -235,7 +235,6 @@ builder.mutationField("signupUser", (t) =>
     },
     resolve: async (query, _parent, args, _info) => {
       const u = await prisma.user.findFirst({
-        ...query,
         where: {
           email: args.email,
           pwd: args.pwd,
