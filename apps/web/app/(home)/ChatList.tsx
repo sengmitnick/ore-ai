@@ -1,14 +1,13 @@
 "use client";
 
 import gql from "graphql-tag";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useLazyQuery } from "@apollo/client";
-import { Token } from "@/utils";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import Link, { LinkProps } from "next/link";
 import classNames from "classnames";
 import { Result, Skeleton } from "@/components";
 import { useMount } from "ahooks";
+import { SignupMutation } from "@/graphql";
 
 const ChatQuery = gql`
   query ChatQuery($userId: ID!) {
@@ -60,22 +59,22 @@ const ChatInfo = ({ top, href, prompt }: ChatInfoProps) => {
 };
 
 export const ChatList = () => {
-  const router = useRouter();
   const [spinning, setSpinning] = useState(true);
+  const [signup] = useMutation(SignupMutation, {
+    onCompleted(data) {
+      run({ variables: { userId: data.signupUser.id } });
+      setSpinning(false);
+    },
+    onError(error) {
+      console.log(error);
+    },
+  });
   const [run, { data, loading, error }] = useLazyQuery(ChatQuery);
 
   useMount(() => {
-    let userId: string | null = null;
-    if (Token.isSignIn) {
-      userId = Token.token;
-    }
-
-    if (!userId) {
-      router.replace("/login");
-      return;
-    }
-    run({ variables: { userId } });
-    setSpinning(false);
+    signup({
+      variables: { name: "demo", email: "demo@ore.ai", pwd: "123456" },
+    });
   });
 
   if (loading || spinning) return <Skeleton />;

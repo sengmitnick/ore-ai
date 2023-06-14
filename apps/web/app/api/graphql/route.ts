@@ -233,8 +233,16 @@ builder.mutationField("signupUser", (t) =>
       email: t.arg.string({ required: true }),
       pwd: t.arg.string({ required: true }),
     },
-    resolve: async (query, _parent, args, _info) =>
-      prisma.user.create({
+    resolve: async (query, _parent, args, _info) => {
+      const u = await prisma.user.findFirst({
+        ...query,
+        where: {
+          email: args.email,
+          pwd: args.pwd,
+        },
+      });
+      if (u) return u;
+      return prisma.user.create({
         ...query,
         data: {
           email: args.email,
@@ -476,7 +484,8 @@ VI. 结论和建议`,
             ],
           },
         },
-      }),
+      });
+    },
   })
 );
 
