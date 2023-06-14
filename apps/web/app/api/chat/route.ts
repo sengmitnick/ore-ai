@@ -1,7 +1,7 @@
 import { OpenAIStream, OpenAIStreamPayload } from "@/utils/openAIStream";
 import { NextResponse } from "next/server";
 
-if (!process.env.NEXT_PUBLIC_API_KEY) {
+if (!process.env.API_KEY) {
   throw new Error("Missing env var from OpenAI");
 }
 
