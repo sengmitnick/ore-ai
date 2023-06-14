@@ -4,6 +4,7 @@ import { formDataToObject } from "@/utils";
 import { useGetState, useMount } from "ahooks";
 import classNames from "classnames";
 import { useMutation } from "@apollo/client";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { FormEventHandler, useRef, useState } from "react";
 import { Dropdown } from "flowbite";
 import type { DropdownOptions, DropdownInterface } from "flowbite";
@@ -107,49 +108,76 @@ export function ChatPage({
     if (getLoad()) return;
     setLoading(true);
 
-    const response = await fetch("/api/chat", {
-      method: "POST",
+    const payload = {
+      model: "gpt-3.5-turbo",
+      messages: chats,
+      temperature: 0.7,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      max_tokens: 1000,
+      stream: true,
+      n: 1,
+    };
+
+    let text = "";
+
+    fetchEventSource(`${process.env.NEXT_PUBLIC_API_URL}/chat/completions`, {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_KEY ?? ""}`,
       },
-      body: JSON.stringify({ messages: chats }),
+      method: "POST",
+      body: JSON.stringify(payload),
+      onopen: async (response) => {
+        if (response.status == 403) {
+          setLoading(false);
+          update((prev) => {
+            prev[0].content = "当前 Key 的调用额度已用完～";
+            prev[0].error = true;
+            return [...prev];
+          });
+          return;
+        }
+        update((prev) => {
+          prev[0].content = "";
+          return [...prev];
+        });
+      },
+      onmessage: (msg) => {
+        if (!getLoad()) return;
+        if (msg.data === "[DONE]") {
+          setLoading(false);
+          addMessage({
+            variables: { chatId, role: Role.ASSISTANT, content: text },
+          });
+          return;
+        }
+        const data = JSON.parse(msg.data);
+        const finish_reason = data.choices[0].finish_reason;
+        const finish = finish_reason === "stop" || finish_reason === "length";
+        const content = data.choices[0].delta.content;
+
+        if (finish) {
+          setLoading(false);
+        } else if (content) {
+          text += content;
+          update((prev) => {
+            prev[0].content = content;
+            return [...prev];
+          });
+        }
+      },
+      onerror: (err) => {
+        console.log("error", err);
+        setLoading(false);
+        update((prev) => {
+          prev[0].content = "未知错误";
+          prev[0].error = true;
+          return [...prev];
+        });
+      },
     });
-
-    if (!response.ok) {
-      setLoading(false);
-      const data = await response.json();
-      update((prev) => {
-        prev[0].content = data.error || "未知错误";
-        prev[0].error = true;
-        return [...prev];
-      });
-      return;
-    }
-
-    // This data is a ReadableStream
-    const data = response.body;
-    if (!data) {
-      return;
-    }
-
-    const reader = data.getReader();
-    const decoder = new TextDecoder();
-    let done = false;
-    let content = "";
-
-    while (!done && getLoad()) {
-      const { value, done: doneReading } = await reader.read();
-      done = doneReading;
-      const chunkValue = decoder.decode(value);
-      content += chunkValue;
-      update((prev) => {
-        prev[0].content = content;
-        return [...prev];
-      });
-    }
-
-    addMessage({ variables: { chatId, role: Role.ASSISTANT, content } });
-    setLoading(false);
   };
 
   const onSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
