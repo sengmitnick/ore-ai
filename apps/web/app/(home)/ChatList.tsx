@@ -8,6 +8,7 @@ import classNames from "classnames";
 import { Result, Skeleton } from "@/components";
 import { useMount } from "ahooks";
 import { SignupMutation } from "@/graphql";
+import { Token } from "@/utils";
 
 const ChatQuery = gql`
   query ChatQuery($userId: ID!) {
@@ -62,6 +63,7 @@ export const ChatList = () => {
   const [spinning, setSpinning] = useState(true);
   const [signup] = useMutation(SignupMutation, {
     onCompleted(data) {
+      Token.set(data.signupUser.id);
       run({ variables: { userId: data.signupUser.id } });
       setSpinning(false);
     },
