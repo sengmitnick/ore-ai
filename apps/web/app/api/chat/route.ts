@@ -1,10 +1,6 @@
 import { OpenAIStream, OpenAIStreamPayload } from "@/utils/openAIStream";
 import { NextResponse } from "next/server";
 
-if (!process.env.API_KEY) {
-  throw new Error("Missing env var from OpenAI");
-}
-
 export async function POST(req: Request): Promise<Response> {
   const { messages } = (await req.json()) as {
     messages?: any[];

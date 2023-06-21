@@ -125,6 +125,8 @@ export function ChatPage({
 
     let text = "";
     controllerRef.current = new AbortController();
+    // 通过 API 获取 OPENAI_API_KEY
+    // 目前使用 turbo 缓存打包资产，直接在前端获取会导致 Key 在发布到社区没有变化的问题
     const ret = await fetch("/api/api_key", { method: "POST" });
     const key = await ret.text();
 
